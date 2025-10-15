@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Runaz — Post a Request</title>
+
+  <!-- Fonts + Tailwind -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode:'class',
+      theme:{ extend:{
+        colors:{ runaz:{ blue:'#003d87', yellow:'#FFC52E', ink:'#111827' } },
+        boxShadow:{ soft:'0 12px 30px rgba(16,24,40,.08)' }
+      }}
+    }
+  </script>
+  <style>body{font-family:Inter,system-ui}</style>
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gray-50 text-runaz-ink dark:bg-gray-900 dark:text-gray-100">
+  <!-- Header -->
+  <div id="site-header" class="border-b dark:border-gray-800 bg-white/90 dark:bg-gray-900/80 backdrop-blur sticky top-0 z-40"></div>
+
+
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <h1 class="text-3xl font-extrabold">Post a Request</h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-300">Describe the job and get offers from vetted Runners.</p>
+
+    <form id="postForm" class="mt-6 space-y-6">
+      <!-- Job Basics -->
+      <section class="rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-6">
+        <h2 class="text-lg font-semibold">Job details</h2>
+        <div class="mt-4 grid gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Title</label>
+            <input name="title" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900" placeholder="e.g. Fix leaking kitchen sink" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Category</label>
+            <select name="category" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900" required>
+              <option value="">Select…</option>
+              <option>Plumbing</option>
+              <option>Electrical</option>
+              <option>Cleaning</option>
+              <option>Beauty & Grooming</option>
+              <option>Photography</option>
+              <option>Catering</option>
+              <option>Home Lessons</option>
+              <option>Tech Help</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Description</label>
+            <textarea id="desc" name="description" rows="5" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900" placeholder="Explain the task, materials available, constraints, etc." required></textarea>
+            <div class="mt-1 text-xs text-gray-500"><span id="descCount">0</span>/600 characters</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Budget & Time -->
+      <section class="rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-6">
+        <h2 class="text-lg font-semibold">Budget & timing</h2>
+
+        <div class="mt-4 grid gap-4">
+          <!-- Budget Type -->
+          <div>
+            <label class="block text-sm font-medium mb-1">Budget type</label>
+            <div class="grid sm:grid-cols-3 gap-2">
+              <label class="flex items-center gap-2 rounded-xl border dark:border-gray-700 px-3 py-2">
+                <input type="radio" name="budget_type" value="fixed" class="accent-runaz-blue" checked> Fixed
+              </label>
+              <label class="flex items-center gap-2 rounded-xl border dark:border-gray-700 px-3 py-2">
+                <input type="radio" name="budget_type" value="hourly" class="accent-runaz-blue"> Hourly
+              </label>
+              <label class="flex items-center gap-2 rounded-xl border dark:border-gray-700 px-3 py-2">
+                <input type="radio" name="budget_type" value="range" class="accent-runaz-blue"> Range
+              </label>
+            </div>
+          </div>
+
+          <!-- Budget Inputs -->
+          <div id="budgetFixed" class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Amount (₦)</label>
+              <input name="amount" type="number" min="0" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900" placeholder="e.g. 12000">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Urgency</label>
+              <select name="urgency" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900">
+                <option>Flexible</option><option>Today</option><option>Within 3 days</option><option>This week</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="budgetHourly" class="hidden grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Hourly rate (₦)</label>
+              <input name="hourly_rate" type="number" min="0" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900" placeholder="e.g. 3500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Estimated hours</label>
+              <input name="hours" type="number" min="1" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900" placeholder="e.g. 3">
+            </div>
+          </div>
+
+          <div id="budgetRange" class="hidden grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Min (₦)</label>
+              <input name="min_amount" type="number" min="0" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900" placeholder="e.g. 8000">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Max (₦)</label>
+              <input name="max_amount" type="number" min="0" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900" placeholder="e.g. 15000">
+            </div>
+          </div>
+
+          <!-- Date/Time -->
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Preferred date</label>
+              <input name="date" type="date" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Preferred time</label>
+              <input name="time" type="time" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Location & Preferences -->
+      <section class="rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-6">
+        <h2 class="text-lg font-semibold">Location & preferences</h2>
+        <div class="mt-4 grid gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium mb-1">Address</label>
+            <input name="address" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900" placeholder="House No, Street, Area" required>
+          </div>
+          <div class="grid sm:grid-cols-3 gap-4">
+            <div><label class="block text-sm font-medium mb-1">City/Town</label><input name="city" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900" required></div>
+            <div><label class="block text-sm font-medium mb-1">State</label><input name="state" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900" required></div>
+            <div><label class="block text-sm font-medium mb-1">LGA</label><input name="lga" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900"></div>
+          </div>
+
+          <div class="grid sm:grid-cols-3 gap-3 text-sm">
+            <label class="flex items-center gap-2"><input type="checkbox" name="onsite" class="accent-runaz-blue" checked> On-site</label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="remote" class="accent-runaz-blue"> Remote ok</label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="verified_only" class="accent-runaz-blue"> Verified runners only</label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Attachments & Contact -->
+      <section class="rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-6">
+        <h2 class="text-lg font-semibold">Attachments & contact</h2>
+        <div class="mt-4 grid gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Photos / files (optional)</label>
+            <input id="files" name="files" type="file" multiple accept="image/*,.pdf,.doc,.docx"
+                   class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 bg-white dark:bg-gray-900">
+            <div id="fileList" class="mt-3 grid grid-cols-3 gap-2"></div>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Preferred contact</label>
+              <select name="contact" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900">
+                <option value="chat">In-app chat</option>
+                <option value="phone">Phone</option>
+                <option value="whatsapp">WhatsApp</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Phone (if needed)</label>
+              <input name="phone" type="tel" inputmode="tel" class="w-full px-3 py-2.5 rounded-xl border dark:border-gray-700 dark:bg-gray-900" placeholder="+234 80x xxx xxxx">
+            </div>
+          </div>
+
+          <label class="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="use_escrow" class="accent-runaz-blue" checked>
+            Use escrow (recommended)
+          </label>
+        </div>
+      </section>
+
+      <!-- Submit -->
+      <div class="flex items-center justify-end gap-3">
+        <a href="categories.html" class="px-4 py-2 rounded-xl border dark:border-gray-700">Cancel</a>
+        <button id="openReview" type="button" class="px-5 py-2.5 rounded-xl bg-runaz-blue text-white font-semibold">Publish Request</button>
+      </div>
+    </form>
+
+    <!-- Success card -->
+    <div id="successCard" class="hidden mt-8 rounded-2xl border dark:border-gray-700 bg-white dark:bg-gray-800 p-8 text-center">
+      <div class="mx-auto w-12 h-12 rounded-full bg-emerald-100 grid place-items-center">
+        <i data-feather="check" class="text-emerald-700"></i>
+      </div>
+      <h3 class="mt-3 text-xl font-bold">Your request is live!</h3>
+      <p class="mt-1 text-gray-600 dark:text-gray-300">You’ll start receiving offers from nearby Runners shortly.</p>
+      <div class="mt-5 flex items-center justify-center gap-3">
+        <a href="requester.html" class="px-4 py-2 rounded-xl bg-runaz-blue text-white font-semibold">Go to Dashboard</a>
+        <a href="categories.html" class="px-4 py-2 rounded-xl border dark:border-gray-700">Browse more categories</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Review Drawer -->
+  <div id="reviewDrawer" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t dark:border-gray-700 rounded-t-2xl p-6">
+      <div class="flex items-center justify-between gap-3">
+        <h3 class="text-lg font-semibold">Review your request</h3>
+        <button id="closeReview" class="p-2 rounded-lg border dark:border-gray-700">Close</button>
+      </div>
+      <div id="reviewBody" class="mt-4 grid gap-3 text-sm"></div>
+      <div class="mt-5 flex items-center justify-end gap-3">
+        <button id="editReview" class="px-4 py-2 rounded-xl border dark:border-gray-700">Edit</button>
+        <button id="confirmPublish" class="px-5 py-2.5 rounded-xl bg-runaz-blue text-white font-semibold">Confirm & Publish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="py-10 border-t bg-white dark:bg-gray-900 dark:border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-sm text-gray-600 dark:text-gray-400 flex flex-col md:flex-row gap-2 md:items-center md:justify-between">
+      <p>© 2025 Runaz. All rights reserved.</p>
+      <div class="flex gap-4">
+        <a href="#" class="hover:text-runaz-blue">Terms</a>
+        <a href="#" class="hover:text-runaz-blue">Privacy</a>
+        <a href="#" class="hover:text-runaz-blue">Support</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Header + page logic -->
+  <script src="/scripts/header.js"></script>
+  <script>
+    // Mount header
+    RunazHeader.init({
+      active:'how',
+      logoSrc:'/assets/runaz-logo.png',
+      homeUrl:'index.html',
+      links:[
+        { key:'how',        label:'How it works', href:'#how' },
+        { key:'categories', label:'Categories',   href:'categories.html' },
+        { key:'trust',      label:'Why Runaz',    href:'about.html' },
+        { key:'faq',        label:'FAQ',          href:'faq.html' }
+      ]
+    });
+
+    // Description counter
+    const desc = document.getElementById('desc');
+    const descCount = document.getElementById('descCount');
+    desc.addEventListener('input', () => {
+      const v = desc.value.slice(0, 600);
+      if (v !== desc.value) desc.value = v;
+      descCount.textContent = v.length;
+    });
+
+    // Budget toggles
+    const budgetFixed  = document.getElementById('budgetFixed');
+    const budgetHourly = document.getElementById('budgetHourly');
+    const budgetRange  = document.getElementById('budgetRange');
+    document.querySelectorAll('input[name="budget_type"]').forEach(r => {
+      r.addEventListener('change', () => {
+        const t = r.value;
+        budgetFixed.classList.toggle('hidden', t !== 'fixed');
+        budgetHourly.classList.toggle('hidden', t !== 'hourly');
+        budgetRange.classList.toggle('hidden', t !== 'range');
+      });
+    });
+
+    // Attachments preview
+    const files = document.getElementById('files');
+    const fileList = document.getElementById('fileList');
+    files.addEventListener('change', () => {
+      fileList.innerHTML = '';
+      Array.from(files.files).forEach(f => {
+        if (!f.type.startsWith('image/')) return;
+        const url = URL.createObjectURL(f);
+        const img = document.createElement('img');
+        img.src = url; img.className = 'w-full h-24 object-cover rounded-xl border dark:border-gray-700';
+        fileList.appendChild(img);
+      });
+    });
+
+    // --- Review Drawer + Mock API ---
+    const form = document.getElementById('postForm');
+    const drawer = document.getElementById('reviewDrawer');
+    const reviewBody = document.getElementById('reviewBody');
+    const success = document.getElementById('successCard');
+    const openReview = document.getElementById('openReview');
+    const closeReview = document.getElementById('closeReview');
+    const editReview = document.getElementById('editReview');
+    const confirmPublish = document.getElementById('confirmPublish');
+
+    function getFormData(){
+      const fd = new FormData(form);
+      const budgetType = fd.get('budget_type');
+      const payload = {
+        title: fd.get('title')?.trim(),
+        category: fd.get('category'),
+        description: fd.get('description')?.trim(),
+        budget_type: budgetType,
+        amount: budgetType==='fixed' ? Number(fd.get('amount')||0) : undefined,
+        hourly_rate: budgetType==='hourly' ? Number(fd.get('hourly_rate')||0) : undefined,
+        hours: budgetType==='hourly' ? Number(fd.get('hours')||0) : undefined,
+        min_amount: budgetType==='range' ? Number(fd.get('min_amount')||0) : undefined,
+        max_amount: budgetType==='range' ? Number(fd.get('max_amount')||0) : undefined,
+        urgency: fd.get('urgency') || null,
+        date: fd.get('date') || null,
+        time: fd.get('time') || null,
+        address: fd.get('address')?.trim(),
+        city: fd.get('city')?.trim(),
+        state: fd.get('state')?.trim(),
+        lga: fd.get('lga')?.trim() || null,
+        onsite: !!fd.get('onsite'),
+        remote: !!fd.get('remote'),
+        verified_only: !!fd.get('verified_only'),
+        contact: fd.get('contact'),
+        phone: fd.get('phone')?.trim() || null,
+        use_escrow: !!fd.get('use_escrow'),
+        // attachments: just names for preview; real upload comes later
+        files: Array.from(files.files).map(f => ({ name: f.name, type: f.type, size: f.size }))
+      };
+      return payload;
+    }
+
+    function validateBasics(p){
+      if(!p.title || !p.category || !p.description) return false;
+      // budget minimal check
+      if(p.budget_type==='fixed' && !(p.amount>0)) return false;
+      if(p.budget_type==='hourly' && !(p.hourly_rate>0 && p.hours>0)) return false;
+      if(p.budget_type==='range' && !((p.min_amount>0) && (p.max_amount>0) && (p.max_amount>=p.min_amount))) return false;
+      // location minimal
+      if(!p.address || !p.city || !p.state) return false;
+      return true;
+    }
+
+    function renderReview(p){
+      const money = (n)=> '₦ ' + Number(n||0).toLocaleString();
+      const budgetLine =
+        p.budget_type==='fixed'  ? `Fixed · ${money(p.amount)}`
+      : p.budget_type==='hourly' ? `Hourly · ${money(p.hourly_rate)} × ${p.hours}h = ${money(p.hourly_rate * p.hours)}`
+      : `Range · ${money(p.min_amount)} – ${money(p.max_amount)}`;
+
+      reviewBody.innerHTML = `
+        <div class="rounded-xl border dark:border-gray-700 p-4">
+          <div class="text-xs text-gray-500 mb-1">Title</div>
+          <div class="font-semibold">${p.title}</div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div class="rounded-xl border dark:border-gray-700 p-4">
+            <div class="text-xs text-gray-500 mb-1">Category</div>
+            <div class="font-medium">${p.category}</div>
+          </div>
+          <div class="rounded-xl border dark:border-gray-700 p-4">
+            <div class="text-xs text-gray-500 mb-1">Budget</div>
+            <div class="font-medium">${budgetLine}</div>
+          </div>
+        </div>
+        <div class="rounded-xl border dark:border-gray-700 p-4">
+          <div class="text-xs text-gray-500 mb-1">Description</div>
+          <div class="whitespace-pre-wrap">${p.description}</div>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-3">
+          <div class="rounded-xl border dark:border-gray-700 p-4">
+            <div class="text-xs text-gray-500 mb-1">Date</div>
+            <div class="font-medium">${p.date || '—'}</div>
+          </div>
+          <div class="rounded-xl border dark:border-gray-700 p-4">
+            <div class="text-xs text-gray-500 mb-1">Time</div>
+            <div class="font-medium">${p.time || '—'}</div>
+          </div>
+          <div class="rounded-xl border dark:border-gray-700 p-4">
+            <div class="text-xs text-gray-500 mb-1">Urgency</div>
+            <div class="font-medium">${p.urgency || '—'}</div>
+          </div>
+        </div>
+        <div class="rounded-xl border dark:border-gray-700 p-4">
+          <div class="text-xs text-gray-500 mb-1">Location</div>
+          <div class="font-medium">${p.address}, ${p.city}, ${p.state}${p.lga? ', '+p.lga:''}</div>
+          <div class="text-xs text-gray-500 mt-1">Prefs: ${p.onsite?'On-site':''} ${p.remote?' · Remote':''} ${p.verified_only?' · Verified only':''}</div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div class="rounded-xl border dark:border-gray-700 p-4">
+            <div class="text-xs text-gray-500 mb-1">Contact</div>
+            <div class="font-medium">${p.contact}${p.phone ? ' · ' + p.phone : ''}</div>
+          </div>
+          <div class="rounded-xl border dark:border-gray-700 p-4">
+            <div class="text-xs text-gray-500 mb-1">Escrow</div>
+            <div class="font-medium">${p.use_escrow ? 'Enabled' : 'Disabled'}</div>
+          </div>
+        </div>
+        <div class="rounded-xl border dark:border-gray-700 p-4">
+          <div class="text-xs text-gray-500 mb-1">Files (${p.files.length})</div>
+          <div class="text-sm">${p.files.map(f=>f.name).join(', ') || '—'}</div>
+        </div>
+      `;
+    }
+
+    // Open review
+    openReview.addEventListener('click', () => {
+      const payload = getFormData();
+      if(!validateBasics(payload)){
+        alert('Please complete required fields (Title, Category, Description, Budget, and Location).');
+        return;
+      }
+      renderReview(payload);
+      drawer.classList.remove('hidden');
+    });
+
+    // Close/edit
+    closeReview.addEventListener('click', ()=> drawer.classList.add('hidden'));
+    editReview.addEventListener('click', ()=> drawer.classList.add('hidden'));
+
+    // Confirm & Publish (Mock API)
+    async function mockPost(url, data){
+      console.log('📤 Mock POST', url, data); // 👀 See payload in devtools console
+      // simulate latency
+      await new Promise(r=>setTimeout(r, 800));
+      return { ok:true, id: 'REQ-'+Math.floor(Math.random()*1e6) };
+    }
+
+    confirmPublish.addEventListener('click', async ()=>{
+      const payload = getFormData();
+      drawer.classList.add('hidden');
+
+      // pretend to send to backend
+      const res = await mockPost('/api/requests', payload);
+      if(res.ok){
+        document.getElementById('postForm').classList.add('hidden');
+        success.classList.remove('hidden');
+        if (window.feather) feather.replace();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        alert('Something went wrong. Please try again.');
+      }
+    });
+
+    // Feather icons
+    if (window.feather) feather.replace();
+  </script>
+</body>
+</html>

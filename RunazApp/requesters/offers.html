@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Runaz — Offers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode:'class', theme:{ extend:{
+      colors:{ runaz:{ blue:'#003d87', yellow:'#FFC52E', ink:'#111827' } },
+      boxShadow:{ soft:'0 12px 30px rgba(16,24,40,.08)' }
+    } } }
+  </script>
+  <style>body{font-family:Inter,system-ui}</style>
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gray-50 text-runaz-ink dark:bg-gray-900 dark:text-gray-100">
+<script>(()=>{const m=localStorage.getItem('runaz-theme'); if(m==='dark') document.documentElement.classList.add('dark');})();</script>
+
+<!-- Header -->
+  <div id="app-header" class="border-b dark:border-gray-800 bg-white/90 dark:bg-gray-900/80 backdrop-blur sticky top-0 z-40"></div>
+
+<div class="min-h-screen flex">
+  <!-- Desktop sidebar -->
+  <aside class="hidden lg:flex w-72 shrink-0 flex-col border-r dark:border-gray-800 bg-white dark:bg-gray-900">
+    <div class="h-16 px-6 border-b dark:border-gray-800 flex items-center font-extrabold">Requester</div>
+    <nav class="p-3 text-sm">
+      <a class="dash-link" href="index.html"><i data-feather="home"></i> Overview</a>
+      <a class="dash-link" href="post.html"><i data-feather="plus-circle"></i> Post Request</a>
+      <a class="dash-link" href="my-requests.html"><i data-feather="inbox"></i> My Requests</a>
+      <a class="dash-link active" href="offers.html"><i data-feather="tag"></i> Offers</a>
+      <a class="dash-link" href="messages.html"><i data-feather="message-square"></i> Messages</a>
+      <a class="dash-link" href="wallet.html"><i data-feather="credit-card"></i> Wallet</a>
+      <a class="dash-link" href="settings.html"><i data-feather="settings"></i> Settings</a>
+    </nav>
+    <div class="mt-auto p-4 text-xs text-gray-500 dark:text-gray-400">© 2025 Runaz</div>
+  </aside>
+
+  <!-- Mobile drawer -->
+  <div id="drawer" class="fixed inset-0 z-50 hidden">
+    <div id="drawerBack" class="absolute inset-0 bg-black/40"></div>
+    <aside class="absolute left-0 top-0 bottom-0 w-72 bg-white dark:bg-gray-900 border-r dark:border-gray-800 p-3">
+      <div class="h-14 flex items-center justify-between">
+        <div class="font-extrabold">Requester</div>
+        <button id="closeDrawer" class="p-2 rounded-lg border dark:border-gray-700" aria-label="Close menu"><i data-feather="x"></i></button>
+      </div>
+      <nav class="text-sm">
+        <a class="dash-link" href="index.html"><i data-feather="home"></i> Overview</a>
+        <a class="dash-link" href="post.html"><i data-feather="plus-circle"></i> Post Request</a>
+        <a class="dash-link" href="my-requests.html"><i data-feather="inbox"></i> My Requests</a>
+        <a class="dash-link active" href="offers.html"><i data-feather="tag"></i> Offers</a>
+        <a class="dash-link" href="messages.html"><i data-feather="message-square"></i> Messages</a>
+        <a class="dash-link" href="wallet.html"><i data-feather="credit-card"></i> Wallet</a>
+        <a class="dash-link" href="settings.html"><i data-feather="settings"></i> Settings</a>
+      </nav>
+    </aside>
+  </div>
+
+  <!-- Main -->
+  <main class="flex-1 min-w-0">
+    <!-- Topbar -->
+    <div class="h-16 bg-white dark:bg-gray-900 border-b dark:border-gray-800 px-4 lg:px-8 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <h1 class="text-lg font-bold">Offers</h1>
+      </div>
+      <div class="hidden md:flex items-center gap-3">
+        <div class="relative">
+          <i data-feather="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3"></i>
+          <input id="offerSearch" class="input pl-9" placeholder="Search providers or jobs…">
+        </div>
+        <select id="offerSort" class="input">
+          <option value="price-asc">Price ↑</option>
+          <option value="price-desc">Price ↓</option>
+          <option value="rating-desc">Rating</option>
+          <option value="dist-asc">Distance</option>
+        </select>
+        <label class="flex items-center gap-2 text-sm"><input id="filterVerified" type="checkbox" class="accent-runaz-blue"> Verified only</label>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto p-4 lg:p-8">
+      <div id="offersGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      <div id="offersEmpty" class="hidden mt-10 text-center">
+        <div class="text-2xl font-bold">No offers yet</div>
+        <p class="text-gray-600 dark:text-gray-300 mt-1">Post a request or wait for providers to respond.</p>
+        <a href="post.html" class="mt-4 inline-flex items-center px-4 py-2 rounded-xl bg-runaz-blue text-white font-semibold">Post a Request</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Compare Modal -->
+<div id="cmpModal" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black/40"></div>
+  <div class="absolute inset-x-0 top-10 mx-auto max-w-5xl rounded-2xl bg-white dark:bg-gray-900 border dark:border-gray-700 p-5">
+    <div class="flex items-center justify-between">
+      <div class="text-lg font-bold">Compare Offers</div>
+      <button id="cmpClose" class="p-2 rounded-lg border dark:border-gray-700"><i data-feather="x"></i></button>
+    </div>
+    <div id="cmpBody" class="mt-4 grid md:grid-cols-2 gap-4"></div>
+  </div>
+</div>
+
+<script src="./scripts/requester-header.js"></script>
+<script>
+  RunazRequesterHeader.init({
+    mountId: 'app-header',
+    brand: 'Runaz',
+    logoSrc: '/assets/runaz-logo.png',
+    locationText: 'Ikorodu, Lagos',
+    wallet: '₦ 12,500',
+    avatar: 'https://i.pravatar.cc/100?img=13'
+  });
+</script>
+
+<script>
+  // Drawer
+  const drawer=document.getElementById('drawer');
+  const openBtn=document.getElementById('openDrawer');
+  const closeBtn=document.getElementById('closeDrawer');
+  const back=document.getElementById('drawerBack');
+  const open=()=>{drawer.classList.remove('hidden');drawer.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';};
+  const close=()=>{drawer.classList.add('hidden');drawer.setAttribute('aria-hidden','true');document.body.style.overflow='';};
+  openBtn?.addEventListener('click',open); closeBtn?.addEventListener('click',close); back?.addEventListener('click',close);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!drawer.classList.contains('hidden'))close();});
+
+  // Data + render
+  const DATA=[
+    { id:'o1', prov:'Adeyemi Plumbing',   price:8000, rating:4.7, dist:2.1, verified:true,  eta:'Today 3pm', job:'Fix kitchen sink' },
+    { id:'o2', prov:'RapidFix Plumbers',  price:7000, rating:4.5, dist:4.0, verified:false, eta:'Today 5pm', job:'Fix kitchen sink' },
+    { id:'o3', prov:'EliteClean Services',price:12500,rating:4.8, dist:3.4, verified:true,  eta:'Tomorrow',  job:'Home cleaning' },
+  ];
+  const grid=document.getElementById('offersGrid');
+  const empty=document.getElementById('offersEmpty');
+  let selected=[];
+
+  const card=(o)=>`
+    <div class="panel">
+      <div class="flex items-center justify-between">
+        <div class="font-semibold truncate">${o.prov} ${o.verified?'<span class="pill ml-1">Verified</span>':''}</div>
+        <div class="text-sm">${o.rating}★</div>
+      </div>
+      <div class="text-sm text-gray-600 dark:text-gray-300 mt-1">${o.job} · ${o.dist} km</div>
+      <div class="mt-3 text-2xl font-extrabold">₦ ${o.price.toLocaleString()}</div>
+      <div class="text-sm text-gray-600 dark:text-gray-300">ETA: ${o.eta}</div>
+      <div class="mt-4 flex gap-2">
+        <button class="btn compare" data-id="${o.id}">Compare</button>
+        <button class="btn-yellow">Accept</button>
+      </div>
+    </div>`;
+
+  function render(list){
+    grid.innerHTML=list.map(card).join('');
+    empty.classList.toggle('hidden', list.length>0);
+    if (window.feather) feather.replace();
+    grid.querySelectorAll('.compare').forEach(b=>{
+      b.addEventListener('click',()=>{
+        const id=b.dataset.id;
+        if (!selected.includes(id)) selected.push(id);
+        if (selected.length>2) selected.shift();
+        openCompare();
+      });
+    });
+  }
+
+  function applyFilters(){
+    const q=(document.getElementById('offerSearch')?.value||'').toLowerCase();
+    const sort=document.getElementById('offerSort')?.value;
+    const ver=document.getElementById('filterVerified')?.checked;
+    let list=DATA.filter(o => (!ver||o.verified) && (o.prov.toLowerCase().includes(q)||o.job.toLowerCase().includes(q)));
+    const sorters={ 'price-asc':(a,b)=>a.price-b.price, 'price-desc':(a,b)=>b.price-a.price, 'rating-desc':(a,b)=>b.rating-a.rating, 'dist-asc':(a,b)=>a.dist-b.dist };
+    list.sort(sorters[sort]||sorters['price-asc']);
+    render(list);
+  }
+
+  function openCompare(){
+    const picks=DATA.filter(o=>selected.includes(o.id)).slice(0,2);
+    if (!picks.length) return;
+    const body=document.getElementById('cmpBody');
+    body.innerHTML=picks.map(p=>`
+      <div class="rounded-xl border dark:border-gray-700 p-4">
+        <div class="flex items-center justify-between">
+          <div class="font-semibold">${p.prov} ${p.verified?'<span class="pill ml-1">Verified</span>':''}</div>
+          <div class="text-sm">${p.rating}★</div>
+        </div>
+        <div class="text-sm text-gray-600 dark:text-gray-300 mt-1">${p.job} · ${p.dist} km</div>
+        <div class="mt-3 text-3xl font-extrabold">₦ ${p.price.toLocaleString()}</div>
+        <div class="text-sm">ETA: ${p.eta}</div>
+        <div class="mt-4 flex gap-2">
+          <a href="messages.html" class="btn">Message</a>
+          <button class="btn-yellow">Accept</button>
+        </div>
+      </div>`).join('');
+    document.getElementById('cmpModal').classList.remove('hidden');
+    document.getElementById('cmpClose').onclick=()=> document.getElementById('cmpModal').classList.add('hidden');
+    if (window.feather) feather.replace();
+  }
+
+  ['offerSearch','offerSort','filterVerified'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('input', applyFilters);
+    document.getElementById(id)?.addEventListener('change', applyFilters);
+  });
+  applyFilters();
+  if (window.feather) feather.replace();
+</script>
+
+<style type="text/tailwindcss">
+  @layer components {
+    .input{ @apply rounded-xl border dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2.5; }
+    .panel{ @apply rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-5; }
+    .btn{ @apply px-3 py-2 rounded-lg border dark:border-gray-700 text-sm; }
+    .btn-yellow{ @apply px-3 py-2 rounded-lg bg-runaz-yellow text-runaz-ink text-sm font-semibold; }
+    .pill{ @apply px-2 py-0.5 rounded-full text-xs bg-gray-100 dark:bg-gray-800; }
+    .dash-link{ @apply flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800; }
+    .dash-link.active{ @apply bg-gray-100 dark:bg-gray-800 font-semibold; }
+  }
+</style>
+</body>
+</html>

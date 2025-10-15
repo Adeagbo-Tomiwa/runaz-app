@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Runaz — About Us</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode:'class', theme:{ extend:{ colors:{ runaz:{ blue:'#003d87', yellow:'#FFC52E', ink:'#111827' } }, boxShadow:{ soft:'0 12px 30px rgba(16,24,40,.08)' } } } }
+  </script>
+  <style>body{font-family:Inter,system-ui}</style>
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gray-50 text-runaz-ink dark:bg-gray-900 dark:text-gray-100">
+
+  <div id="site-header" class="border-b dark:border-gray-800 bg-white/90 dark:bg-gray-900/80 backdrop-blur sticky top-0 z-40"></div>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-3xl font-extrabold mb-6">About Runaz</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+      Runaz is a local service marketplace connecting customers with trusted service providers (Runners).  
+      Whether you need repairs, tutoring, or beauty services, we make it easy to book vetted professionals nearby.
+    </p>
+
+    <div class="mt-10 grid md:grid-cols-3 gap-6">
+      <div class="rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-6 shadow-soft">
+        <i data-feather="shield" class="w-6 h-6 text-runaz-blue"></i>
+        <h3 class="mt-3 font-semibold">Trusted</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Runners are verified and reviewed by the community.</p>
+      </div>
+      <div class="rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-6 shadow-soft">
+        <i data-feather="zap" class="w-6 h-6 text-runaz-yellow"></i>
+        <h3 class="mt-3 font-semibold">Fast</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Post a request and get offers within minutes.</p>
+      </div>
+      <div class="rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-6 shadow-soft">
+        <i data-feather="credit-card" class="w-6 h-6 text-runaz-blue"></i>
+        <h3 class="mt-3 font-semibold">Secure</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Escrow payments mean you only pay when satisfied.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-8 border-t bg-white dark:bg-gray-900 dark:border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-600 dark:text-gray-400">
+      <p>© 2025 Runaz. All rights reserved.</p>
+      <div class="flex gap-6">
+        <a href="#">Terms</a><a href="#">Privacy</a><a href="#">Support</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/scripts/header.js"></script>
+  <script>RunazHeader.init({ active:'trust', logoSrc:'/assets/runaz-logo.png', homeUrl:'/' });</script>
+</body>
+</html>

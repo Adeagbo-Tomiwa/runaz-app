@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Runaz — Wallet (Requester)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{colors:{runaz:{blue:'#003d87',yellow:'#FFC52E',ink:'#111827'}},boxShadow:{soft:'0 12px 30px rgba(16,24,40,.08)'}}}}
+</script>
+<style>body{font-family:Inter,system-ui}</style>
+<script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gray-50 text-runaz-ink dark:bg-gray-900 dark:text-gray-100">
+<script>(()=>{const m=localStorage.getItem('runaz-theme'); if(m==='dark') document.documentElement.classList.add('dark');})();</script>
+
+<header class="border-b dark:border-gray-800 bg-white/90 dark:bg-gray-900/80 backdrop-blur sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 min-w-0"><img src="/assets/runaz-logo.png" class="h-9 w-9" alt=""><span class="font-extrabold text-lg sm:text-xl">Runaz</span></a>
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+      <a class="hover:text-runaz-blue" href="../categories.html">Categories</a>
+      <a class="hover:text-runaz-blue" href="../how-it-works.html">How it works</a>
+      <a class="hover:text-runaz-blue" href="../faq.html">FAQ</a>
+    </nav>
+    <div class="hidden md:flex items-center gap-2 sm:gap-3">
+      <button id="themeToggle" class="p-2 rounded-lg border dark:border-gray-700">🌗</button>
+      <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border dark:border-gray-700"><i data-feather="credit-card" class="w-4 h-4"></i><span class="text-sm font-semibold">₦ 12,500</span></div>
+      <img class="w-9 h-9 rounded-full" src="https://i.pravatar.cc/100?img=13" alt="">
+    </div>
+    <div class="md:hidden flex items-center gap-2"><button id="themeToggleMobile" class="p-2 rounded-lg border dark:border-gray-700">🌗</button><button id="openDrawer" class="p-2 rounded-lg border dark:border-gray-700"><i data-feather="menu"></i></button></div>
+  </div>
+</header>
+
+<div class="min-h-screen flex">
+  <aside class="hidden lg:flex w-72 shrink-0 flex-col border-r dark:border-gray-800 bg-white dark:bg-gray-900">
+    <div class="h-16 px-6 border-b dark:border-gray-800 flex items-center font-extrabold">Requester</div>
+    <nav class="p-3 text-sm">
+      <a class="dash-link" href="index.html"><i data-feather="home"></i> Overview</a>
+      <a class="dash-link" href="post.html"><i data-feather="plus-circle"></i> Post Request</a>
+      <a class="dash-link" href="my-requests.html"><i data-feather="inbox"></i> My Requests</a>
+      <a class="dash-link" href="offers.html"><i data-feather="tag"></i> Offers</a>
+      <a class="dash-link" href="messages.html"><i data-feather="message-square"></i> Messages</a>
+      <a class="dash-link active" href="wallet.html"><i data-feather="credit-card"></i> Wallet</a>
+      <a class="dash-link" href="settings.html"><i data-feather="settings"></i> Settings</a>
+    </nav>
+    <div class="mt-auto p-4 text-xs text-gray-500 dark:text-gray-400">© 2025 Runaz</div>
+  </aside>
+
+  <div id="drawer" class="fixed inset-0 z-50 hidden">
+    <div id="drawerBack" class="absolute inset-0 bg-black/40"></div>
+    <aside class="absolute left-0 top-0 bottom-0 w-72 bg-white dark:bg-gray-900 border-r dark:border-gray-800 p-3">
+      <div class="h-14 flex items-center justify-between"><div class="font-extrabold">Requester</div><button id="closeDrawer" class="p-2 rounded-lg border dark:border-gray-700"><i data-feather="x"></i></button></div>
+      <nav class="text-sm">
+        <a class="dash-link" href="index.html"><i data-feather="home"></i> Overview</a>
+        <a class="dash-link" href="post.html"><i data-feather="plus-circle"></i> Post Request</a>
+        <a class="dash-link" href="my-requests.html"><i data-feather="inbox"></i> My Requests</a>
+        <a class="dash-link" href="offers.html"><i data-feather="tag"></i> Offers</a>
+        <a class="dash-link" href="messages.html"><i data-feather="message-square"></i> Messages</a>
+        <a class="dash-link active" href="wallet.html"><i data-feather="credit-card"></i> Wallet</a>
+        <a class="dash-link" href="settings.html"><i data-feather="settings"></i> Settings</a>
+      </nav>
+    </aside>
+  </div>
+
+  <main class="flex-1 min-w-0">
+    <div class="h-16 bg-white dark:bg-gray-900 border-b dark:border-gray-800 px-4 lg:px-8 flex items-center justify-between">
+      <h1 class="text-lg font-bold">Wallet</h1>
+      <div class="flex items-center gap-2">
+        <select id="txFilter" class="input">
+          <option value="all">All</option><option value="in">Deposits</option><option value="out">Payments</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto p-4 lg:p-8 space-y-6">
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="panel">
+          <div class="text-sm text-gray-600 dark:text-gray-300">Available Balance</div>
+          <div id="bal" class="mt-1 text-3xl font-extrabold">₦ 12,500</div>
+          <div class="mt-4 flex gap-2">
+            <button id="addBtn" class="btn-yellow">Add Funds</button>
+            <button id="wdBtn" class="btn">Withdraw</button>
+          </div>
+        </div>
+        <div class="panel"><div class="text-sm text-gray-600 dark:text-gray-300">Escrow (ongoing)</div><div class="mt-1 text-3xl font-extrabold">₦ 5,000</div></div>
+        <div class="panel"><div class="text-sm text-gray-600 dark:text-gray-300">Total Spent</div><div class="mt-1 text-3xl font-extrabold">₦ 84,200</div></div>
+      </div>
+
+      <div class="panel">
+        <div class="flex items-center justify-between">
+          <h3 class="font-semibold">Transactions</h3>
+          <div class="flex items-center gap-2">
+            <input id="txSearch" class="input" placeholder="Search transactions…">
+          </div>
+        </div>
+        <div id="txList" class="mt-4 divide-y dark:divide-gray-700"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Add funds modal -->
+<div id="addModal" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black/40"></div>
+  <div class="absolute inset-x-0 top-16 mx-auto max-w-md rounded-2xl bg-white dark:bg-gray-900 border dark:border-gray-700 p-5">
+    <div class="flex items-center justify-between"><div class="text-lg font-bold">Add Funds</div><button class="btn" id="addClose">Close</button></div>
+    <div class="mt-4 space-y-3">
+      <input id="addAmount" type="number" min="0" class="input w-full" placeholder="Amount (₦)">
+      <select class="input w-full"><option>Card</option><option>Transfer</option></select>
+      <button id="addSubmit" class="btn-yellow w-full">Add</button>
+    </div>
+  </div>
+</div>
+<!-- Withdraw modal -->
+<div id="wdModal" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black/40"></div>
+  <div class="absolute inset-x-0 top-16 mx-auto max-w-md rounded-2xl bg-white dark:bg-gray-900 border dark:border-gray-700 p-5">
+    <div class="flex items-center justify-between"><div class="text-lg font-bold">Withdraw</div><button class="btn" id="wdClose">Close</button></div>
+    <div class="mt-4 space-y-3">
+      <input id="wdAmount" type="number" min="0" class="input w-full" placeholder="Amount (₦)">
+      <input id="wdBank" class="input w-full" placeholder="Bank / Account No">
+      <button id="wdSubmit" class="btn-yellow w-full">Withdraw</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const toggleTheme=()=>{const d=document.documentElement.classList.toggle('dark');localStorage.setItem('runaz-theme',d?'dark':'light');};
+document.getElementById('themeToggle')?.addEventListener('click',toggleTheme);
+document.getElementById('themeToggleMobile')?.addEventListener('click',toggleTheme);
+// Drawer
+const drawer=document.getElementById('drawer'),openBtn=document.getElementById('openDrawer'),closeBtn=document.getElementById('closeDrawer'),back=document.getElementById('drawerBack');
+const open=()=>{drawer.classList.remove('hidden');document.body.style.overflow='hidden';};
+const close=()=>{drawer.classList.add('hidden');document.body.style.overflow='';};
+openBtn?.addEventListener('click',open);closeBtn?.addEventListener('click',close);back?.addEventListener('click',close);
+
+const TX=[ // type: in | out
+  {id:'t1', title:'Deposit (Card)',  type:'in',  amount:35000, ts:'2025-08-01 10:15'},
+  {id:'t2', title:'Payment: Plumbing',type:'out', amount:8000,  ts:'2025-08-01 11:30'},
+  {id:'t3', title:'Payment: Cleaning',type:'out', amount:12500, ts:'2025-08-03 09:12'},
+  {id:'t4', title:'Deposit (Transfer)',type:'in', amount:10000, ts:'2025-08-05 16:44'},
+];
+let balance=12500;
+const txList=document.getElementById('txList');
+
+function row(t){return `<div class="py-3 flex items-center justify-between">
+  <div><div class="font-medium">${t.title}</div><div class="text-xs text-gray-500">${t.ts}</div></div>
+  <div class="text-right ${t.type==='in'?'text-emerald-600':'text-rose-600'} font-semibold"> ${t.type==='in'?'+':'-'}₦ ${t.amount.toLocaleString()}</div>
+</div>`;}
+function renderTx(){
+  const q=(document.getElementById('txSearch').value||'').toLowerCase();
+  const f=document.getElementById('txFilter').value;
+  const list=TX.filter(t=>(f==='all'||t.type===f)&& (t.title.toLowerCase().includes(q)));
+  txList.innerHTML=list.map(row).join('');
+}
+document.getElementById('txSearch').addEventListener('input',renderTx);
+document.getElementById('txFilter').addEventListener('change',renderTx);
+renderTx();
+if (window.feather) feather.replace();
+
+// Modals
+const addModal=document.getElementById('addModal'),wdModal=document.getElementById('wdModal');
+const show=(m)=>m.classList.remove('hidden'), hide=(m)=>m.classList.add('hidden');
+document.getElementById('addBtn').onclick=()=>show(addModal);
+document.getElementById('wdBtn').onclick=()=>show(wdModal);
+document.getElementById('addClose').onclick=()=>hide(addModal);
+document.getElementById('wdClose').onclick=()=>hide(wdModal);
+document.getElementById('addSubmit').onclick=()=>{
+  const amt=+document.getElementById('addAmount').value||0; if(!amt) return;
+  balance+=amt; document.getElementById('bal').textContent='₦ '+balance.toLocaleString();
+  TX.unshift({id:'t'+(Date.now()),title:'Deposit (Card)',type:'in',amount:amt,ts:new Date().toLocaleString()}); renderTx(); hide(addModal);
+};
+document.getElementById('wdSubmit').onclick=()=>{
+  const amt=+document.getElementById('wdAmount').value||0; if(!amt||amt>balance) return alert('Invalid amount');
+  balance-=amt; document.getElementById('bal').textContent='₦ '+balance.toLocaleString();
+  TX.unshift({id:'t'+(Date.now()),title:'Withdrawal',type:'out',amount:amt,ts:new Date().toLocaleString()}); renderTx(); hide(wdModal);
+};
+</script>
+
+<style type="text/tailwindcss">
+@layer components{
+  .input{@apply rounded-xl border dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2.5;}
+  .panel{@apply rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-5;}
+  .btn{@apply px-3 py-2 rounded-lg border dark:border-gray-700 text-sm;}
+  .btn-yellow{@apply px-3 py-2 rounded-lg bg-runaz-yellow text-runaz-ink text-sm font-semibold;}
+  .dash-link{@apply flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800;}
+  .dash-link.active{@apply bg-gray-100 dark:bg-gray-800 font-semibold;}
+}
+</style>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Runaz — Starter Template</title>
+
+  <!-- Fonts + Tailwind -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode:'class',
+      theme:{
+        extend:{
+          colors:{ runaz:{ blue:'#003d87', yellow:'#FFC52E', ink:'#111827' } },
+          boxShadow:{ soft:'0 12px 30px rgba(16,24,40,.08)' }
+        }
+      }
+    }
+  </script>
+  <style>body{font-family:Inter,system-ui}</style>
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gray-50 text-runaz-ink dark:bg-gray-900 dark:text-gray-100">
+
+  <!-- Header mount -->
+  <div id="site-header" class="border-b dark:border-gray-800 bg-white/90 dark:bg-gray-900/80 backdrop-blur sticky top-0 z-40"></div>
+
+  <!-- Main Content -->
+  <main id="page-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- 👇 Replace this with your page-specific content -->
+    <h1 class="text-3xl font-extrabold mb-4">Welcome to Runaz</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-300">
+      This is your starter template. Replace this section with your page content.
+    </p>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-8 border-t bg-white dark:bg-gray-900 dark:border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-600 dark:text-gray-400">
+      <p>© 2025 Runaz. All rights reserved.</p>
+      <div class="flex gap-6">
+        <a href="#" class="hover:text-runaz-blue">Terms</a>
+        <a href="#" class="hover:text-runaz-blue">Privacy</a>
+        <a href="#" class="hover:text-runaz-blue">Support</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Reusable Header Script -->
+  <script src="/scripts/header.js"></script>
+  <script>
+    RunazHeader.init({
+      active: '', // highlight the active menu key, e.g. 'how' | 'categories'
+      logoSrc: '/assets/runaz-logo.png',
+      homeUrl: '/',
+      showAuth: true,
+      loginUrl: '/login',
+      registerUrl: '/register',
+      links: [
+        { key:'how',        label:'How it works', href:'#how' },
+        { key:'categories', label:'Categories',   href:'#categories' },
+        { key:'trust',      label:'Why Runaz',    href:'#trust' },
+        { key:'faq',        label:'FAQ',          href:'#faq' }
+      ]
+    });
+  </script>
+</body>
+</html>

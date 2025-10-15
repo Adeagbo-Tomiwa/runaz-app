@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Runaz — My Jobs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode:'class', theme:{ extend:{
+      colors:{ runaz:{ blue:'#003d87', yellow:'#FFC52E', ink:'#111827' } },
+      boxShadow:{ soft:'0 12px 30px rgba(16,24,40,.08)' }
+    } } }
+  </script>
+  <style>body{font-family:Inter,system-ui}</style>
+  <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body class="bg-gray-50 text-runaz-ink dark:bg-gray-900 dark:text-gray-100">
+<script>(()=>{const m=localStorage.getItem('runaz-theme'); if(m==='dark') document.documentElement.classList.add('dark');})();</script>
+
+<!-- Header (standalone) -->
+<header class="border-b dark:border-gray-800 bg-white/90 dark:bg-gray-900/80 backdrop-blur sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 min-w-0">
+      <img src="/assets/runaz-logo.png" alt="Runaz" class="h-9 w-9 object-contain"/>
+      <span class="font-extrabold text-lg sm:text-xl tracking-tight truncate">Runaz</span>
+    </a>
+    <!-- <nav class="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-medium">
+      <a class="hover:text-runaz-blue" href="../categories.html">Browse</a>
+      <a class="hover:text-runaz-blue" href="../how-it-works.html">How it works</a>
+      <a class="hover:text-runaz-blue" href="../faq.html">FAQ</a>
+    </nav> -->
+    <div class="hidden md:flex items-center gap-2 sm:gap-3">
+      <button id="themeToggle" class="p-2 rounded-lg border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800" aria-label="Toggle theme">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 4V2M12 22v-2M4.93 4.93 3.51 3.51M20.49 20.49 19.07 19.07M4 12H2M22 12h-2M4.93 19.07 3.51 20.49M20.49 3.51 19.07 4.93"/><circle cx="12" cy="12" r="4"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border dark:border-gray-700">
+        <i data-feather="credit-card" class="w-4 h-4"></i><span class="text-sm font-semibold">₦ 32,000</span>
+      </div>
+      <img class="w-9 h-9 rounded-full" src="https://i.pravatar.cc/100?img=5" alt="">
+    </div>
+    <div class="md:hidden flex items-center gap-2">
+      <button id="themeToggleMobile" class="p-2 rounded-lg border dark:border-gray-700" aria-label="Toggle theme">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 4V2M12 22v-2M4.93 4.93 3.51 3.51M20.49 20.49 19.07 19.07M4 12H2M22 12h-2M4.93 19.07 3.51 20.49M20.49 3.51 19.07 4.93"/><circle cx="12" cy="12" r="4"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button id="openDrawer" class="p-2 rounded-lg border dark:border-gray-700" aria-label="Open menu"><i data-feather="menu"></i></button>
+    </div>
+  </div>
+</header>
+
+<div class="min-h-screen flex">
+  <!-- Desktop sidebar -->
+  <aside class="hidden lg:flex w-72 shrink-0 flex-col border-r dark:border-gray-800 bg-white dark:bg-gray-900">
+    <div class="h-16 px-6 border-b dark:border-gray-800 flex items-center font-extrabold">Runner</div>
+    <nav class="p-3 text-sm">
+      <a class="dash-link" href="index.html"><i data-feather="home"></i> Overview</a>
+      <a class="dash-link active" href="jobs.html"><i data-feather="briefcase"></i> My Jobs</a>
+      <a class="dash-link" href="offers.html"><i data-feather="tag"></i> Offers Sent</a>
+      <a class="dash-link" href="../categories.html"><i data-feather="compass"></i> Browse Requests</a>
+      <a class="dash-link" href="messages.html"><i data-feather="message-square"></i> Messages</a>
+      <a class="dash-link" href="wallet.html"><i data-feather="credit-card"></i> Wallet</a>
+      <a class="dash-link" href="settings.html"><i data-feather="settings"></i> Settings</a>
+    </nav>
+    <div class="mt-auto p-4 text-xs text-gray-500 dark:text-gray-400">© 2025 Runaz</div>
+  </aside>
+
+  <!-- Mobile drawer -->
+  <div id="drawer" class="fixed inset-0 z-50 hidden">
+    <div id="drawerBack" class="absolute inset-0 bg-black/40"></div>
+    <aside class="absolute left-0 top-0 bottom-0 w-72 bg-white dark:bg-gray-900 border-r dark:border-gray-800 p-3">
+      <div class="h-14 flex items-center justify-between">
+        <div class="font-extrabold">Runner</div>
+        <button id="closeDrawer" class="p-2 rounded-lg border dark:border-gray-700" aria-label="Close menu"><i data-feather="x"></i></button>
+      </div>
+      <nav class="text-sm">
+        <a class="dash-link" href="index.html"><i data-feather="home"></i> Overview</a>
+        <a class="dash-link active" href="jobs.html"><i data-feather="briefcase"></i> My Jobs</a>
+        <a class="dash-link" href="offers.html"><i data-feather="tag"></i> Offers Sent</a>
+        <a class="dash-link" href="../categories.html"><i data-feather="compass"></i> Browse Requests</a>
+        <a class="dash-link" href="messages.html"><i data-feather="message-square"></i> Messages</a>
+        <a class="dash-link" href="wallet.html"><i data-feather="credit-card"></i> Wallet</a>
+        <a class="dash-link" href="settings.html"><i data-feather="settings"></i> Settings</a>
+      </nav>
+    </aside>
+  </div>
+
+  <!-- Main -->
+  <main class="flex-1 min-w-0">
+    <!-- Topbar -->
+    <div class="h-16 bg-white dark:bg-gray-900 border-b dark:border-gray-800 px-4 lg:px-8 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <h1 class="text-lg font-bold">My Jobs</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="relative hidden md:block">
+          <i data-feather="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3"></i>
+          <input id="jobSearch" class="input pl-9" placeholder="Search jobs…">
+        </div>
+        <select id="jobFilter" class="input">
+          <option value="all">All</option>
+          <option value="active">Active</option>
+          <option value="scheduled">Scheduled</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto p-4 lg:p-8">
+      <!-- Tabs -->
+      <div class="rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-3">
+        <div class="flex flex-wrap gap-2">
+          <button data-tab="active" class="tab active">Active</button>
+          <button data-tab="scheduled" class="tab">Scheduled</button>
+          <button data-tab="completed" class="tab">Completed</button>
+        </div>
+      </div>
+
+      <!-- Lists -->
+      <div id="jobList" class="mt-4 grid lg:grid-cols-2 gap-4"></div>
+      <div id="jobEmpty" class="hidden mt-10 text-center">
+        <div class="text-2xl font-bold">No jobs to show</div>
+        <p class="text-gray-600 dark:text-gray-300 mt-1">Browse open requests and send offers to get hired.</p>
+        <a href="../categories.html" class="mt-4 inline-flex items-center px-4 py-2 rounded-xl bg-runaz-blue text-white font-semibold">Browse Requests</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Theme toggle
+  const toggleTheme=()=>{ const d=document.documentElement.classList.toggle('dark'); localStorage.setItem('runaz-theme', d?'dark':'light'); };
+  document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+  document.getElementById('themeToggleMobile')?.addEventListener('click', toggleTheme);
+
+  // Drawer
+  const drawer=document.getElementById('drawer');
+  const openBtn=document.getElementById('openDrawer');
+  const closeBtn=document.getElementById('closeDrawer');
+  const back=document.getElementById('drawerBack');
+  const open=()=>{drawer.classList.remove('hidden');drawer.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';};
+  const close=()=>{drawer.classList.add('hidden');drawer.setAttribute('aria-hidden','true');document.body.style.overflow='';};
+  openBtn?.addEventListener('click',open); closeBtn?.addEventListener('click',close); back?.addEventListener('click',close);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!drawer.classList.contains('hidden'))close();});
+
+  // Mock jobs
+  const JOBS=[
+    { id:'j1', title:'Install water heater', cat:'Plumbing',   area:'Bayeku', when:'Today',     status:'active',    budget:15000 },
+    { id:'j2', title:'2-bedroom wiring fix', cat:'Electrical', area:'Ibeshe', when:'Tomorrow',  status:'scheduled', budget:28000 },
+    { id:'j3', title:'AC servicing',         cat:'Repairs',    area:'Agbede', when:'This week', status:'completed', budget:18000 },
+  ];
+  const list = document.getElementById('jobList');
+  const empty= document.getElementById('jobEmpty');
+  let currentTab='active';
+
+  const item=(j)=>`
+    <div class="panel">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="row-title">${j.title}</div>
+          <div class="row-sub">${j.cat} · ${j.when} · ${j.area}</div>
+        </div>
+        <div class="text-right">
+          <div class="text-sm text-gray-600 dark:text-gray-300">Budget</div>
+          <div class="text-xl font-extrabold">₦ ${j.budget.toLocaleString()}</div>
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <a href="messages.html" class="btn">Message</a>
+        ${j.status==='active' ? '<button class="btn-yellow">Mark Done</button>' : ''}
+        ${j.status==='scheduled' ? '<button class="btn-yellow">Start</button>' : ''}
+        ${j.status==='completed' ? '<button class="btn">View Receipt</button>' : ''}
+      </div>
+    </div>`;
+
+  function render(){
+    const q=(document.getElementById('jobSearch')?.value||'').toLowerCase();
+    const filter=document.getElementById('jobFilter').value;
+    let data=JOBS.filter(j =>
+      (filter==='all' || j.status===filter) &&
+      (currentTab ? j.status===currentTab : true) &&
+      (j.title.toLowerCase().includes(q) || j.cat.toLowerCase().includes(q) || j.area.toLowerCase().includes(q))
+    );
+    list.innerHTML=data.map(item).join('');
+    empty.classList.toggle('hidden', data.length>0);
+    if (window.feather) feather.replace();
+  }
+
+  document.querySelectorAll('.tab').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      currentTab=b.dataset.tab;
+      render();
+    });
+  });
+  document.getElementById('jobFilter').addEventListener('change', render);
+  document.getElementById('jobSearch')?.addEventListener('input', render);
+  render();
+  if (window.feather) feather.replace();
+</script>
+
+<style type="text/tailwindcss">
+  @layer components {
+    .input{ @apply rounded-xl border dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2.5; }
+    .panel{ @apply rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-5; }
+    .btn{ @apply px-3 py-2 rounded-lg border dark:border-gray-700 text-sm; }
+    .btn-yellow{ @apply px-3 py-2 rounded-lg bg-runaz-yellow text-runaz-ink text-sm font-semibold; }
+    .row-title{ @apply font-semibold; }
+    .row-sub{ @apply text-sm text-gray-600 dark:text-gray-300; }
+    .tab{ @apply px-3 py-1.5 rounded-lg border dark:border-gray-700 text-sm; }
+    .tab.active{ @apply bg-runaz-blue text-white border-runaz-blue; }
+    .dash-link{ @apply flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800; }
+    .dash-link.active{ @apply bg-gray-100 dark:bg-gray-800 font-semibold; }
+  }
+</style>
+</body>
+</html>
