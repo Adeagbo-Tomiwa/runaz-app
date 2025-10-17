@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline — Runaz</title>
+    <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            runaz: {
+              blue: '#003d87',
+              yellow: '#FFC52E',
+              ink: '#111827'
+            }
+          },
+          boxShadow: {
+            soft: '0 12px 30px rgba(16,24,40,.08)'
+          }
+        }
+      }
+    }
+  </script>
+    <!-- Global Styles -->
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    ::selection { background: #003d87; color: #fff; }
+  </style>
+
+  </head>
+  <body class="flex flex-col items-center justify-center min-h-screen text-center bg-gray-50 text-gray-700">
+    <img src="./assets/runaz-logo.png" alt="Runaz Logo" class="w-24 mb-4" />
+    <h1 class="text-xl font-semibold mb-2">You're offline</h1>
+    <p class="text-gray-500">Please check your internet connection and try again.</p>
+  </body>
+</html>

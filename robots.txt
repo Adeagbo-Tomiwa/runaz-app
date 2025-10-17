@@ -1,0 +1,16 @@
+# Robots.txt for Runaz
+# Controls how search engines crawl and index your website
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /uploads/
+Disallow: /tmp/
+
+# Sitemap location
+Sitemap: https://runaz.app/sitemap.xml
+
+# Crawl-delay (optional: 10 seconds between requests)
+Crawl-delay: 10

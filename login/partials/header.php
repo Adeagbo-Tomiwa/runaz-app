@@ -2,17 +2,17 @@
 <header class="border-b dark:border-gray-800 bg-white/90 dark:bg-gray-900/80 backdrop-blur sticky top-0 z-40">
   <div class="max-w-7xl mx-auto h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
     <!-- Brand -->
-    <a href="##" class="flex items-center gap-2 min-w-0">
-      <img src="./assets/runaz-logo.png" alt="Runaz Logo" class="h-9 w-9 object-contain" />
+    <a href="index.php" class="flex items-center gap-2 min-w-0">
+      <img src="../assets/runaz-logo.png" alt="Runaz Logo" class="h-9 w-9 object-contain" />
       <span class="font-extrabold text-lg sm:text-xl tracking-tight truncate">Runaz</span>
     </a>
 
     <!-- Desktop Navigation -->
     <nav class="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-medium">
-      <a href="./how-it-works/" class="hover:text-runaz-blue whitespace-nowrap">How it works</a>
-      <a href="./categories/" class="hover:text-runaz-blue whitespace-nowrap">Categories</a>
-      <a href="./about/" class="hover:text-runaz-blue whitespace-nowrap">Why Runaz</a>
-      <a href="./faq/" class="hover:text-runaz-blue whitespace-nowrap">FAQ</a>
+      <a href="../how-it-works/" class="hover:text-runaz-blue whitespace-nowrap">How it works</a>
+      <a href="##" class="hover:text-runaz-blue whitespace-nowrap">Categories</a>
+      <a href="about.html" class="hover:text-runaz-blue whitespace-nowrap">Why Runaz</a>
+      <a href="faq.html" class="hover:text-runaz-blue whitespace-nowrap">FAQ</a>
     </nav>
 
     <!-- Actions -->
@@ -29,8 +29,8 @@
       </button>
 
       <!-- Auth Buttons -->
-      <a href="./login/" class="text-sm font-semibold hover:text-runaz-blue whitespace-nowrap">Log in</a>
-      <a href="./register/" class="inline-flex items-center px-3 sm:px-4 py-2 rounded-xl bg-runaz-blue text-white hover:opacity-95 shadow-soft whitespace-nowrap">Get Started</a>
+      <a href="login.html" class="text-sm font-semibold hover:text-runaz-blue whitespace-nowrap">Log in</a>
+      <a href="register.html" class="inline-flex items-center px-3 sm:px-4 py-2 rounded-xl bg-runaz-blue text-white hover:opacity-95 shadow-soft whitespace-nowrap">Get Started</a>
     </div>
 
     <!-- Mobile Controls -->
@@ -59,12 +59,12 @@
   <div id="mobileMenu" class="md:hidden hidden border-t bg-white dark:bg-gray-900 dark:border-gray-700">
     <div class="px-4 py-3 space-y-2 text-sm">
       <a href="./how-it-works/" class="block py-2">How it works</a>
-      <a href="./categories/" class="block py-2">Categories</a>
-      <a href="./about/" class="block py-2">Why Runaz</a>
-      <a href="./faq/" class="block py-2">FAQ</a>
+      <a href="categories.html" class="block py-2">Categories</a>
+      <a href="about.html" class="block py-2">Why Runaz</a>
+      <a href="faq.html" class="block py-2">FAQ</a>
       <div class="pt-2 flex gap-3">
-        <a href="./login/" class="flex-1 text-center py-2 rounded-lg border dark:border-gray-700">Log in</a>
-        <a href="./register/" class="flex-1 text-center py-2 rounded-lg bg-runaz-blue text-white">Get Started</a>
+        <a href="login.html" class="flex-1 text-center py-2 rounded-lg border dark:border-gray-700">Log in</a>
+        <a href="register.html" class="flex-1 text-center py-2 rounded-lg bg-runaz-blue text-white">Get Started</a>
       </div>
     </div>
   </div>
