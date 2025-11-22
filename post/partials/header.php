@@ -13,6 +13,7 @@
       <a href="../categories/" class="hover:text-runaz-blue whitespace-nowrap">Categories</a>
       <a href="../about/" class="hover:text-runaz-blue whitespace-nowrap">Why Runaz</a>
       <a href="../faq/" class="hover:text-runaz-blue whitespace-nowrap">FAQ</a>
+      <a href="../blogs/" class="hover:text-runaz-blue whitespace-nowrap">Blogs</a>
     </nav>
 
     <!-- Actions -->
@@ -62,6 +63,7 @@
       <a href="../categories/" class="block py-2">Categories</a>
       <a href="../about/" class="block py-2">Why Runaz</a>
       <a href="../faq/" class="block py-2">FAQ</a>
+      <a href="../blogs/" class="block py-2">Blogs</a>
       <div class="pt-2 flex gap-3">
         <a href="../login/" class="flex-1 text-center py-2 rounded-lg border dark:border-gray-700">Log in</a>
         <a href="../register/" class="flex-1 text-center py-2 rounded-lg bg-runaz-blue text-white">Get Started</a>

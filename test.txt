@@ -1,0 +1,39 @@
+require_once __DIR__ . '/../config/helpers.php';
+echo env('DB_NAME'); // runaz_db
+
+
+
+
+/PHP MAILER CONFIGURATION
+require_once __DIR__ . '/config/mailer.php';
+
+$mail = getMailer();
+$mail->addAddress('recipient@example.com');
+$mail->Subject = "Welcome to Runaz";
+$mail->Body = "<h1>Thank you for joining Runaz!</h1>";
+$mail->send();
+
+
+/USE BASE URL GLOBALLY 
+<a href="<?php echo base_url(); ?>/about">About</a>
+
+
+/LOG ERROS 
+<?php require_once __DIR__ . '../../config/bootstrap.php'; ?>
+
+
+/debug bar
+<?php include __DIR__ . '/config/debug-bar.php'; ?>
+
+
+Download/load composer
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+
+INITIALIZE composer
+
+php composer.phar init
+
+RUN PHPMAILER
+php composer.phar require phpmailer/phpmailer

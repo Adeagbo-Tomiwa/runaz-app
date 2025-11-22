@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '../../../config/bootstrap.php'; ?>
 <head>
   <!-- Basic Meta -->
   <meta charset="utf-8" />

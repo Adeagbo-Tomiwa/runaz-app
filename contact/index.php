@@ -25,11 +25,14 @@
     <form class="space-y-4" id="contactForm">
       <input type="text" name="name"  placeholder="Your Name" class="w-full px-4 py-3 rounded-xl border dark:border-gray-700 bg-white dark:bg-gray-800 dark:placeholder-gray-400">
       <input type="email" name="email" placeholder="Your Email" class="w-full px-4 py-3 rounded-xl border dark:border-gray-700 bg-white dark:bg-gray-800 dark:placeholder-gray-400">
-      <textarea rows="5" name="message placeholder="Your Message" class="w-full px-4 py-3 rounded-xl border dark:border-gray-700 bg-white dark:bg-gray-800 dark:placeholder-gray-400"></textarea>
+      <textarea rows="5" name="message" placeholder="Your Message" class="w-full px-4 py-3 rounded-xl border dark:border-gray-700 bg-white dark:bg-gray-800 dark:placeholder-gray-400"></textarea>
       <button type="submit" class="px-5 py-3 rounded-xl bg-runaz-blue text-white font-semibold">Send Message</button>
     </form>
   </main>
 
+    <!-- Newsletter -->
+  <?php include "../newsletter.php"; ?>
+  
   <!-- FOOTER  -->
  <?php include "./partials/footer.php"; ?>
 

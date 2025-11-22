@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '../../config/bootstrap.php'; ?>
 <head>
   <!-- Basic Meta -->
   <meta charset="utf-8" />
@@ -31,6 +32,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/runaz-logo.png">
   <link rel="icon" type="image/png" sizes="16x16" href="./assets/runaz-logo.png">
   <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./public/css/tailwind.css">
   <link rel="mask-icon" href="./assets/icons/safari-pinned-tab.svg" color="#003d87">
   <meta name="msapplication-TileColor" content="#003d87">
 

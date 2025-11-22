@@ -278,6 +278,9 @@
     </div>
   </section>
 
+    <!-- Newsletter -->
+  <?php include "../newsletter.php"; ?>
+  
   <!-- Footer -->
 <?php include "./partials/footer.php"; ?>
 <?php include "./partials/script.php"; ?>

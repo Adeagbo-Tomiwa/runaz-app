@@ -1,14 +1,18 @@
 <!doctype html>
 <html lang="en">
-  <!-- HEAD MOOUNT -->
-<?php include "./partials/head.php"; ?>
+  <!-- HEAD MOUNT -->
+<?php 
+include "../api/config/database.php";
+include "./partials/head.php"; 
+include "../api/fetch_categories.php"; // Adjust path as needed
+?>
 
 <body class="bg-gray-50 text-runaz-ink dark:bg-gray-900 dark:text-gray-100">
 
 <!-- HEADER MOUNT -->
 <?php include "./partials/header.php"; ?>
 
-           <!-- Breadcrumb Navigation -->
+<!-- Breadcrumb Navigation -->
 <?php include "./partials/breadcrumb.php";  ?>
 
 <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -73,7 +77,7 @@
                  minlength="6" required>
         </div>
       </div>
-      <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">We’ll use your phone for verification and important notifications.</p>
+      <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">We'll use your phone for verification and important notifications.</p>
     </section>
 
     <!-- STEP 2: Personal Info -->
@@ -149,15 +153,25 @@
       <!-- Runner profile fields -->
       <div id="runnerFields" class="mt-4 grid sm:grid-cols-2 gap-4 hidden">
         <div class="sm:col-span-2">
-          <label class="block text-sm font-medium mb-1">Service Categories</label>
+          <label class="block text-sm font-medium mb-1">Service Categories <span class="text-red-500">*</span></label>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Select all categories that apply to your services</p>
           <div class="grid sm:grid-cols-3 gap-2 text-sm">
-            <label class="flex items-center gap-2"><input type="checkbox" name="categories" value="Repairs" class="accent-runaz-blue">Repairs</label>
-            <label class="flex items-center gap-2"><input type="checkbox" name="categories" value="Plumbing" class="accent-runaz-blue">Plumbing</label>
-            <label class="flex items-center gap-2"><input type="checkbox" name="categories" value="Electrical" class="accent-runaz-blue">Electrical</label>
-            <label class="flex items-center gap-2"><input type="checkbox" name="categories" value="Beauty" class="accent-runaz-blue">Beauty</label>
-            <label class="flex items-center gap-2"><input type="checkbox" name="categories" value="Tutoring" class="accent-runaz-blue">Tutoring</label>
-            <label class="flex items-center gap-2"><input type="checkbox" name="categories" value="Cleaning" class="accent-runaz-blue">Cleaning</label>
+            <?php if (!empty($serviceCategories)): ?>
+              <?php foreach ($serviceCategories as $category): ?>
+                <label class="flex items-center gap-2" title="<?php echo htmlspecialchars($category['description'] ?? ''); ?>">
+                  <input type="checkbox" 
+                         name="categories[]" 
+                         value="<?php echo htmlspecialchars($category['id']); ?>" 
+                         data-category-name="<?php echo htmlspecialchars($category['category_name']); ?>"
+                         class="accent-runaz-blue category-checkbox">
+                  <?php echo htmlspecialchars($category['category_name']); ?>
+                </label>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <p class="text-gray-500 dark:text-gray-400 col-span-3">No service categories available. Please contact support.</p>
+            <?php endif; ?>
           </div>
+          <div id="categoryError" class="text-red-500 text-xs mt-1 hidden">Please select at least one service category</div>
         </div>
         <div class="sm:col-span-2"><label class="block text-sm font-medium mb-1">Skills / Keywords</label><input name="skills" class="w-full rounded-xl border dark:bg-gray-900 dark:border-gray-700 px-3 py-2.5" placeholder="e.g. AC servicing, wiring, nail tech"></div>
         <div><label class="block text-sm font-medium mb-1">Hourly rate (₦)</label><input name="rate" type="number" min="0" class="w-full rounded-xl border dark:bg-gray-900 dark:border-gray-700 px-3 py-2.5"></div>
@@ -202,9 +216,49 @@
   </form>
 </main>
 
-<script src="./scripts/auth.js"></script>
-
 <!-- SCRIPT  -->
 <?php include "./partials/script.php"; ?>
+
+<script>
+// Add validation for service categories before moving to next step
+document.addEventListener('DOMContentLoaded', function() {
+  const nextBtn = document.getElementById('nextBtn');
+  const originalNextHandler = nextBtn.onclick;
+  
+  nextBtn.addEventListener('click', function(e) {
+    const currentStep = document.querySelector('section[data-step]:not(.hidden)');
+    const stepNumber = currentStep?.dataset.step;
+    
+    // Validate categories on step 4 for runners
+    if (stepNumber === '4') {
+      const runnerFields = document.getElementById('runnerFields');
+      if (!runnerFields.classList.contains('hidden')) {
+        const checkedCategories = document.querySelectorAll('.category-checkbox:checked');
+        const errorDiv = document.getElementById('categoryError');
+        
+        if (checkedCategories.length === 0) {
+          errorDiv.classList.remove('hidden');
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        } else {
+          errorDiv.classList.add('hidden');
+        }
+      }
+    }
+  });
+  
+  // Clear error when checkbox is selected
+  document.querySelectorAll('.category-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      const checkedCategories = document.querySelectorAll('.category-checkbox:checked');
+      if (checkedCategories.length > 0) {
+        document.getElementById('categoryError').classList.add('hidden');
+      }
+    });
+  });
+});
+</script>
+
 </body>
 </html>

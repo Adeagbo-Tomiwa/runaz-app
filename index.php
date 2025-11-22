@@ -51,45 +51,8 @@
   </section>
 
   <!-- Categories -->
-  <section id="categories" class="py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-end justify-between">
-        <h2 class="text-2xl font-bold">Popular Categories</h2>
-        <a href="./categories" class="text-runaz-blue font-semibold text-sm">See all →</a>
-      </div>
-
-      <div class="mt-6 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-        <a href="./categories/house-repairs" class="group rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-5 hover:shadow-soft transition">
-          <div class="w-10 h-10 rounded-xl bg-runaz-blue/10 grid place-items-center"><i data-feather="tool" class="text-runaz-blue"></i></div>
-          <h3 class="mt-3 font-semibold">House Repairs</h3>
-          <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Plumbers, electricians, technicians</p>
-          <div class="mt-4 text-sm text-runaz-blue font-semibold opacity-0 group-hover:opacity-100">Explore →</div>
-        </a>
-
-        <a href="./categories/beauty" class="group rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-5 hover:shadow-soft transition">
-          <div class="w-10 h-10 rounded-xl bg-runaz-blue/10 grid place-items-center"><i data-feather="scissors" class="text-runaz-blue"></i></div>
-          <h3 class="mt-3 font-semibold">Beauty & Grooming</h3>
-          <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Makeup, hair, nails</p>
-          <div class="mt-4 text-sm text-runaz-blue font-semibold opacity-0 group-hover:opacity-100">Explore →</div>
-        </a>
-
-        <a href="./categories/learning" class="group rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-5 hover:shadow-soft transition">
-          <div class="w-10 h-10 rounded-xl bg-runaz-blue/10 grid place-items-center"><i data-feather="book-open" class="text-runaz-blue"></i></div>
-          <h3 class="mt-3 font-semibold">Learning</h3>
-          <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Home lessons, music, tech</p>
-          <div class="mt-4 text-sm text-runaz-blue font-semibold opacity-0 group-hover:opacity-100">Explore →</div>
-        </a>
-
-        <a href="./categories/events" class="group rounded-2xl bg-white dark:bg-gray-800 border dark:border-gray-700 p-5 hover:shadow-soft transition">
-          <div class="w-10 h-10 rounded-xl bg-runaz-blue/10 grid place-items-center"><i data-feather="camera" class="text-runaz-blue"></i></div>
-          <h3 class="mt-3 font-semibold">Events</h3>
-          <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Photography, DJ, decorations</p>
-          <div class="mt-4 text-sm text-runaz-blue font-semibold opacity-0 group-hover:opacity-100">Explore →</div>
-        </a>
-      </div>
-    </div>
-  </section>
-
+ <?php include "categories.php"; ?>
+ 
   <!-- CTA -->
   <section class="py-16">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -106,6 +69,60 @@
     </div>
   </section>
 
+  <!-- Blog Section -->
+<?php
+// Fetch latest blog posts from database
+$blogQuery = "
+    SELECT 
+        id,
+        title,
+        slug,
+        excerpt,
+        featured_image,
+        author_name,
+        published_at,
+        read_time
+    FROM blog_posts 
+    WHERE status = 'published'
+    AND published_at <= NOW()
+    ORDER BY published_at DESC
+    LIMIT 3
+";
+
+$blogResult = $conn->query($blogQuery);
+$blogPosts = [];
+if ($blogResult) {
+    while ($row = $blogResult->fetch_assoc()) {
+        $blogPosts[] = $row;
+    }
+}
+
+// Helper function to format date
+function formatBlogDate($date) {
+    $timestamp = strtotime($date);
+    return date('M d, Y', $timestamp);
+}
+
+// Helper function to get time ago
+function timeAgo($date) {
+    $timestamp = strtotime($date);
+    $diff = time() - $timestamp;
+    
+    if ($diff < 60) return 'Just now';
+    if ($diff < 3600) return floor($diff / 60) . ' min ago';
+    if ($diff < 86400) return floor($diff / 3600) . ' hours ago';
+    if ($diff < 604800) return floor($diff / 86400) . ' days ago';
+    
+    return date('M d, Y', $timestamp);
+}
+?>
+
+<!-- Blog Section -->
+<?php include "blogs.php"; ?>
+
+<!-- Newsletter Section -->
+<?php include "newsletter.php"; ?>
+  
    <!-- Footer -->
 <?php include "./partials/footer.php"; ?>
 

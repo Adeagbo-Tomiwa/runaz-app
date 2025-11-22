@@ -32,6 +32,9 @@
     </div>
   </main>
 
+    <!-- Newsletter -->
+  <?php include "../newsletter.php"; ?>
+  
   <!-- FOOTER MOUNT -->
  <?php include "./partials/footer.php" ?>
 

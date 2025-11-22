@@ -1,0 +1,42 @@
+# Enable rewriting engine
+RewriteEngine On
+
+# Adjust base path (important if your project is in a subfolder)
+RewriteBase /runaz-app/
+
+# ------------------------------------------------------------
+# 1️⃣ Remove .php extension
+# ------------------------------------------------------------
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php [NC,L]
+
+# ------------------------------------------------------------
+# 2️⃣ Remove .html extension (optional)
+# ------------------------------------------------------------
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.*)$ $1.html [NC,L]
+
+# ------------------------------------------------------------
+# 3️⃣ Pretty URL for single item pages
+# Example: /service/12 → service.php?id=12
+# ------------------------------------------------------------
+RewriteRule ^service/([0-9]+)/?$ service.php?id=$1 [NC,L]
+
+RewriteRule ^messages/([0-9]+)/?$ messages.php?deleted=$1 [NC,L]
+
+# You can duplicate the above pattern for other pages:
+# /package/5 → package.php?id=5
+RewriteRule ^package/([0-9]+)/?$ package.php?id=$1 [NC,L]
+
+# ------------------------------------------------------------
+# 4️⃣ Optional: redirect /index → /
+# ------------------------------------------------------------
+RewriteRule ^index$ / [R=301,L]
+
+# ------------------------------------------------------------
+# 5️⃣ Handle 404 errors gracefully
+# ------------------------------------------------------------
+# Handle 404 errors
+ErrorDocument 404 /runaz-app/404.php
+
+

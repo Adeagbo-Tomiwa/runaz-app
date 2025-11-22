@@ -1,178 +1,310 @@
 <?php
-// /api/register.php
-header('Content-Type: application/json; charset=utf-8');
-// Adjust these settings to your environment
-$db_dsn = "mysql:host=localhost;dbname=runaz_app;charset=utf8mb4";
-$db_user = "localhost";
-$db_pass = "";
+// api/register.php
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Headers: Content-Type');
 
-// Configure file upload
-$UPLOAD_BASE = __DIR__ . '/../uploads/kyc'; // store uploads outside webroot if possible
-$MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB per file
-$ALLOWED_MIMES = [
-    'image/jpeg' => '.jpg',
-    'image/png'  => '.png',
-    'image/webp' => '.webp'
-];
-
-try {
-    $pdo = new PDO($db_dsn, $db_user, $db_pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(['success'=>false,'error'=>'Database connection failed.']);
-    exit;
+// Handle preflight requests
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
 }
 
-function json_err($msg, $code = 400){
-    http_response_code($code);
-    echo json_encode(['success'=>false,'error'=>$msg]);
-    exit;
-}
-
-// We expect a POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    json_err('Invalid request method', 405);
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+    exit();
 }
 
-// Basic required fields (front-end also validates)
-$required = ['role','email','phone','password','password_confirm','first_name','last_name','dob','gender','address','city','state','lga','id_type','id_number'];
-foreach ($required as $r) {
-    if (empty($_POST[$r])) {
-        json_err("Missing required field: $r");
-    }
-}
-
-// Password match
-if ($_POST['password'] !== $_POST['password_confirm']) json_err('Passwords do not match.');
-
-// Sanitize / normalize
-$role = in_array($_POST['role'], ['requester','runner']) ? $_POST['role'] : 'requester';
-$email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
-if (!$email) json_err('Invalid email address.');
-$phone = trim($_POST['phone']);
-$password = $_POST['password'];
-
-// check unique email/phone
-try {
-    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = :email OR phone = :phone LIMIT 1");
-    $stmt->execute([':email'=>$email, ':phone'=>$phone]);
-    if ($stmt->fetch()) json_err('Email or phone already registered.');
-} catch (Exception $e) {
-    json_err('Database error while checking existing users.');
-}
-
-// Validate files exist
-$expect_files = ['selfie','id_front','id_back'];
-foreach ($expect_files as $f) {
-    if (!isset($_FILES[$f]) || !is_uploaded_file($_FILES[$f]['tmp_name'])) {
-        json_err("Missing uploaded file: $f");
-    }
-}
-
-// Create upload dir for this submission
-$now = new DateTime('now', new DateTimeZone('UTC'));
-$folder = $UPLOAD_BASE . '/' . $now->format('Ymd-His') . '-' . bin2hex(random_bytes(6));
-if (!is_dir($folder) && !mkdir($folder, 0755, true)) {
-    json_err('Failed to create upload directory', 500);
-}
-
-function handle_file($key, $folder, $ALLOWED_MIMES, $MAX_FILE_SIZE) {
-    if (!isset($_FILES[$key])) return null;
-    $f = $_FILES[$key];
-    if ($f['error'] !== UPLOAD_ERR_OK) throw new RuntimeException("Upload error for $key");
-    if ($f['size'] > $MAX_FILE_SIZE) throw new RuntimeException("$key is too large");
-    $finfo = new finfo(FILEINFO_MIME_TYPE);
-    $type = $finfo->file($f['tmp_name']);
-    if (!isset($ALLOWED_MIMES[$type])) throw new RuntimeException("Invalid file type for $key");
-    $ext = $ALLOWED_MIMES[$type];
-    $safe = bin2hex(random_bytes(12)) . $ext;
-    $dest = $folder . '/' . $safe;
-    if (!move_uploaded_file($f['tmp_name'], $dest)) throw new RuntimeException("Failed to move uploaded file for $key");
-    // Optionally set restrictive permissions
-    @chmod($dest, 0644);
-    return $dest;
-}
+// Include database config
+require_once __DIR__ . '/config/database.php';
 
 try {
-    $pdo->beginTransaction();
+    // Check database connection
+    if (!isset($conn) || $conn->connect_error) {
+        throw new Exception('Database connection failed');
+    }
 
-    // process files
-    $selfie_path = handle_file('selfie', $folder, $ALLOWED_MIMES, $MAX_FILE_SIZE);
-    $front_path  = handle_file('id_front', $folder, $ALLOWED_MIMES, $MAX_FILE_SIZE);
-    $back_path   = handle_file('id_back', $folder, $ALLOWED_MIMES, $MAX_FILE_SIZE);
+    // Get form data
+    $data = $_POST;
+    $files = $_FILES;
 
-    // Hash password
-    $password_hash = password_hash($password, PASSWORD_DEFAULT);
+    // Validate required fields
+    $required = ['email', 'phone', 'password', 'role', 'first_name', 'last_name', 
+                 'dob', 'gender', 'address', 'city', 'state', 'lga', 
+                 'id_type', 'id_number'];
+    
+    foreach ($required as $field) {
+        if (empty($data[$field])) {
+            throw new Exception("Missing required field: " . ucfirst(str_replace('_', ' ', $field)));
+        }
+    }
 
-    // Insert user
-    $ins = $pdo->prepare("INSERT INTO users
-      (role,email,phone,password_hash,first_name,last_name,dob,gender,address,city,state,lga,referral,id_type,id_number,nin,selfie_path,id_front_path,id_back_path,status)
-      VALUES
-      (:role,:email,:phone,:password_hash,:first_name,:last_name,:dob,:gender,:address,:city,:state,:lga,:referral,:id_type,:id_number,:nin,:selfie_path,:id_front_path,:id_back_path,'pending')
+    // Validate email format
+    if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+        throw new Exception('Invalid email format');
+    }
+
+    // Validate age (must be 18+)
+    $dob = new DateTime($data['dob']);
+    $now = new DateTime();
+    $age = $now->diff($dob)->y;
+    if ($age < 18) {
+        throw new Exception('You must be at least 18 years old to register');
+    }
+
+    // Check if email or phone already exists
+    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ? OR phone = ?");
+    $stmt->bind_param("ss", $data['email'], $data['phone']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        throw new Exception('Email or phone number already registered');
+    }
+    $stmt->close();
+
+    // Validate file uploads
+    $requiredFiles = ['selfie', 'id_front', 'id_back'];
+    foreach ($requiredFiles as $file) {
+        if (empty($files[$file]) || $files[$file]['error'] !== UPLOAD_ERR_OK) {
+            throw new Exception("Missing or invalid file: " . ucfirst(str_replace('_', ' ', $file)));
+        }
+        
+        // Validate file type using finfo
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $files[$file]['tmp_name']);
+        finfo_close($finfo);
+        
+        $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!in_array($mimeType, $allowedTypes)) {
+            throw new Exception("Invalid file type for $file. Only JPEG and PNG allowed");
+        }
+        
+        // Validate file size (5MB max)
+        if ($files[$file]['size'] > 5242880) {
+            throw new Exception("File $file exceeds 5MB limit");
+        }
+    }
+
+    // Validate role-specific fields
+    if ($data['role'] === 'runner') {
+        if (empty($data['categories']) || !is_array($data['categories'])) {
+            throw new Exception('Please select at least one service category');
+        }
+        
+        // Validate that categories exist in database
+        $placeholders = str_repeat('?,', count($data['categories']) - 1) . '?';
+        $stmt = $conn->prepare("SELECT COUNT(*) as count FROM service_categories WHERE id IN ($placeholders) AND is_active = 1");
+        $types = str_repeat('i', count($data['categories']));
+        $stmt->bind_param($types, ...$data['categories']);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        if ($result['count'] != count($data['categories'])) {
+            throw new Exception('Invalid service categories selected');
+        }
+        $stmt->close();
+    }
+
+    // Start transaction
+    $conn->begin_transaction();
+
+    // 1. Create user account
+    $passwordHash = password_hash($data['password'], PASSWORD_BCRYPT, ['cost' => 12]);
+    $stmt = $conn->prepare("
+        INSERT INTO users (email, phone, password_hash, role, status, created_at) 
+        VALUES (?, ?, ?, ?, 'pending', NOW())
     ");
+    $stmt->bind_param("ssss", $data['email'], $data['phone'], $passwordHash, $data['role']);
+    $stmt->execute();
+    $userId = $conn->insert_id;
+    $stmt->close();
 
-    $ins->execute([
-      ':role'=>$role,
-      ':email'=>$email,
-      ':phone'=>$phone,
-      ':password_hash'=>$password_hash,
-      ':first_name'=>trim($_POST['first_name']),
-      ':last_name'=>trim($_POST['last_name']),
-      ':dob'=>$_POST['dob'],
-      ':gender'=>$_POST['gender'],
-      ':address'=>trim($_POST['address']),
-      ':city'=>trim($_POST['city']),
-      ':state'=>trim($_POST['state']),
-      ':lga'=>trim($_POST['lga']),
-      ':referral'=>isset($_POST['referral'])?trim($_POST['referral']):null,
-      ':id_type'=>trim($_POST['id_type']),
-      ':id_number'=>trim($_POST['id_number']),
-      ':nin'=>isset($_POST['nin'])?trim($_POST['nin']):null,
-      ':selfie_path'=>$selfie_path,
-      ':id_front_path'=>$front_path,
-      ':id_back_path'=>$back_path
+    // 2. Insert profile data
+    $stmt = $conn->prepare("
+        INSERT INTO user_profiles 
+        (user_id, first_name, last_name, dob, gender, address, city, state, lga, alt_phone, referral, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+    ");
+    $altPhone = !empty($data['alt_phone']) ? $data['alt_phone'] : null;
+    $referral = !empty($data['referral']) ? $data['referral'] : null;
+    
+    $stmt->bind_param(
+        "issssssssss",
+        $userId,
+        $data['first_name'],
+        $data['last_name'],
+        $data['dob'],
+        $data['gender'],
+        $data['address'],
+        $data['city'],
+        $data['state'],
+        $data['lga'],
+        $altPhone,
+        $referral
+    );
+    $stmt->execute();
+    $stmt->close();
+
+    // 3. Handle file uploads
+    $uploadDir = __DIR__ . '/../uploads/kyc/' . $userId . '/';
+    if (!is_dir($uploadDir)) {
+        if (!mkdir($uploadDir, 0755, true)) {
+            throw new Exception('Failed to create upload directory');
+        }
+    }
+
+    $filePaths = [];
+    foreach ($requiredFiles as $fileKey) {
+        $file = $files[$fileKey];
+        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $filename = $fileKey . '_' . time() . '_' . uniqid() . '.' . $extension;
+        $destination = $uploadDir . $filename;
+        
+        if (!move_uploaded_file($file['tmp_name'], $destination)) {
+            throw new Exception("Failed to upload $fileKey");
+        }
+        
+        // Store relative path
+        $filePaths[$fileKey] = 'uploads/kyc/' . $userId . '/' . $filename;
+    }
+
+    // 4. Insert KYC data
+    $stmt = $conn->prepare("
+        INSERT INTO user_kyc 
+        (user_id, id_type, id_number, nin, selfie_path, id_front_path, id_back_path, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+    ");
+    $nin = !empty($data['nin']) ? $data['nin'] : null;
+    
+    $stmt->bind_param(
+        "issssss",
+        $userId,
+        $data['id_type'],
+        $data['id_number'],
+        $nin,
+        $filePaths['selfie'],
+        $filePaths['id_front'],
+        $filePaths['id_back']
+    );
+    $stmt->execute();
+    $stmt->close();
+
+    // 5. Insert role-specific profile
+    if ($data['role'] === 'runner') {
+        // Insert runner profile
+        $stmt = $conn->prepare("
+            INSERT INTO runner_profiles 
+            (user_id, skills, hourly_rate, experience_years, bio, availability, created_at) 
+            VALUES (?, ?, ?, ?, ?, ?, NOW())
+        ");
+        
+        $skills = !empty($data['skills']) ? $data['skills'] : null;
+        $rate = !empty($data['rate']) ? floatval($data['rate']) : null;
+        $experience = !empty($data['experience']) ? intval($data['experience']) : null;
+        $bio = !empty($data['bio']) ? $data['bio'] : null;
+        $availability = !empty($data['availability']) ? $data['availability'] : null;
+        
+        $stmt->bind_param(
+            "isdiss",
+            $userId,
+            $skills,
+            $rate,
+            $experience,
+            $bio,
+            $availability
+        );
+        $stmt->execute();
+        $stmt->close();
+        
+        // Insert service categories into junction table
+        $stmt = $conn->prepare("
+            INSERT INTO user_service_categories (user_id, category_id) 
+            VALUES (?, ?)
+        ");
+        
+        foreach ($data['categories'] as $categoryId) {
+            $catId = intval($categoryId);
+            $stmt->bind_param("ii", $userId, $catId);
+            $stmt->execute();
+        }
+        $stmt->close();
+        
+    } else {
+        // Insert requester profile
+        $stmt = $conn->prepare("
+            INSERT INTO requester_profiles 
+            (user_id, default_service_address, prefer_verified, budget_preference, notes, created_at) 
+            VALUES (?, ?, ?, ?, ?, NOW())
+        ");
+        
+        $defaultAddress = !empty($data['default_address']) ? $data['default_address'] : null;
+        $preferVerified = !empty($data['prefer_verified']) ? $data['prefer_verified'] : 'yes';
+        $budgetPref = !empty($data['budget_pref']) ? $data['budget_pref'] : 'Flexible';
+        $notes = !empty($data['notes']) ? $data['notes'] : null;
+        
+        $stmt->bind_param(
+            "issss",
+            $userId,
+            $defaultAddress,
+            $preferVerified,
+            $budgetPref,
+            $notes
+        );
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    // 6. Log registration (optional - create table if needed)
+    $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $stmt = $conn->prepare("
+        INSERT INTO registration_logs (user_id, step, ip_address, created_at) 
+        VALUES (?, 5, ?, NOW())
+    ");
+    if ($stmt) {
+        $stmt->bind_param("is", $userId, $ipAddress);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    // Commit transaction
+    $conn->commit();
+
+    // Send success response
+    echo json_encode([
+        'success' => true,
+        'message' => 'Registration successful! Your account is pending verification.',
+        'user_id' => $userId,
+        'redirect' => '../login/'
     ]);
 
-    $userId = (int)$pdo->lastInsertId();
-
-    // If runner, save runner profile
-    if ($role === 'runner') {
-        // categories may come as multiple inputs; convert to JSON
-        $categories = null;
-        if (isset($_POST['categories'])) {
-            // If categories is multiple values, it will be an array
-            if (is_array($_POST['categories'])) $categories = json_encode($_POST['categories']);
-            else $categories = json_encode([$_POST['categories']]);
-        }
-        $rp = $pdo->prepare("INSERT INTO runner_profiles (user_id,categories,skills,rate,experience,bio,availability)
-                             VALUES (:user_id,:categories,:skills,:rate,:experience,:bio,:availability)");
-        $rp->execute([
-            ':user_id'=>$userId,
-            ':categories'=>$categories,
-            ':skills'=>isset($_POST['skills'])?trim($_POST['skills']):null,
-            ':rate'=>isset($_POST['rate']) && $_POST['rate']!=='' ? (float)$_POST['rate'] : null,
-            ':experience'=>isset($_POST['experience']) && $_POST['experience']!=='' ? (int)$_POST['experience'] : null,
-            ':bio'=>isset($_POST['bio'])?trim($_POST['bio']):null,
-            ':availability'=>isset($_POST['availability'])?trim($_POST['availability']):null
-        ]);
-    }
-
-    $pdo->commit();
-
-    // Success: you may want to create a session or send verification SMS/email here.
-    echo json_encode(['success'=>true, 'message'=>'Registration successful','redirect'=> $role === 'runner' ? '/runners/dashboard.html' : '/requesters/dashboard.html']);
-
-} catch (RuntimeException $re) {
-    if ($pdo->inTransaction()) $pdo->rollBack();
-    // remove created files/folder where appropriate
-    // (brief cleanup: attempt to remove files)
-    array_map(function($p){ if($p && file_exists($p)) @unlink($p); }, [$selfie_path ?? null, $front_path ?? null, $back_path ?? null]);
-    @rmdir($folder);
-    json_err($re->getMessage(), 400);
 } catch (Exception $e) {
-    if ($pdo->inTransaction()) $pdo->rollBack();
-    // Cleanup
-    array_map(function($p){ if($p && file_exists($p)) @unlink($p); }, [$selfie_path ?? null, $front_path ?? null, $back_path ?? null]);
-    @rmdir($folder);
-    json_err('Server error. Please try again later.', 500);
+    // Rollback on error
+    if (isset($conn) && $conn->connect_error === null) {
+        $conn->rollback();
+    }
+    
+    // Clean up uploaded files on error
+    if (isset($uploadDir) && is_dir($uploadDir)) {
+        $filesInDir = glob("$uploadDir/*");
+        if ($filesInDir) {
+            array_map('unlink', $filesInDir);
+        }
+        @rmdir($uploadDir);
+    }
+    
+    // Log error
+    error_log("Registration error: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
+    
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
+} finally {
+    if (isset($conn)) {
+        $conn->close();
+    }
 }
+?>

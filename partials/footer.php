@@ -20,11 +20,11 @@
     <div>
       <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">Quick Links</h3>
       <ul class="space-y-2">
-        <li><a href="/about.php" class="hover:text-runaz-blue">About Us</a></li>
-        <li><a href="/how-it-works.php" class="hover:text-runaz-blue">How It Works</a></li>
-        <li><a href="/pricing.php" class="hover:text-runaz-blue">Pricing</a></li>
-        <li><a href="/faq.php" class="hover:text-runaz-blue">FAQs</a></li>
-        <li><a href="/blog.php" class="hover:text-runaz-blue">Blog & Updates</a></li>
+        <li><a href="./about/" class="hover:text-runaz-blue">About Us</a></li>
+        <li><a href="./how-it-works/" class="hover:text-runaz-blue">How It Works</a></li>
+        <li><a href="./pricing/" class="hover:text-runaz-blue">Pricing</a></li>
+        <li><a href="./faq/" class="hover:text-runaz-blue">FAQs</a></li>
+        <li><a href="./blogs/" class="hover:text-runaz-blue">Blog & Updates</a></li>
       </ul>
     </div>
 
